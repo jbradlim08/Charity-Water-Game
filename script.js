@@ -7,7 +7,7 @@ const gameHeight = gameBoard.height;
 
 const trainColor = 'lightgreen';
 const trainBorder = 'black';
-const waterColor = 'darkblue';
+const waterColor = 'red';
 
 const unitSize = 25;
 
@@ -28,6 +28,8 @@ window.addEventListener('keydown', changeDirection);
 resetButton.addEventListener('click', resetGame);
 
 gameStart();
+createWater();
+drawWater();
 
 function gameStart(){
 
@@ -44,11 +46,17 @@ function clearBoard(){
 
 // Will find a random place to place a food
 function createWater(){
+    function randomWater(min, max){
+        return Math.round((Math.random() * (max - min) + min) / unitSize) * unitSize;
+    }
 
+    waterX = randomWater(0, gameWidth - unitSize);
+    waterY = randomWater(0, gameWidth - unitSize);
 }
 
 function drawWater(){
-
+    ctx.fillStyle = waterColor;
+    ctx.fillRect(waterX, waterY, unitSize, unitSize);
 }
 
 function moveTrain(){
@@ -72,5 +80,5 @@ function displayGameOver(){
 }
 
 function resetGame(){
-    
+
 }
