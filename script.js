@@ -1,6 +1,9 @@
 const gameBoard = document.getElementById("game_board");
 const ctx = gameBoard.getContext("2d");
+
 const resetButton = document.getElementById("reset_button");
+const cleanWaterScore = document.getElementById("clean_water_score");
+const dirtyWaterScore = document.getElementById("dirty_water_score");
 
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
@@ -24,19 +27,35 @@ let train = [ // Default value
     {x:0, y:0}
 ]
 
+let cleanScore, dirtyScore;
+
 window.addEventListener('keydown', changeDirection);
 resetButton.addEventListener('click', resetGame);
 
 gameStart();
-createWater();
-drawWater();
+
 
 function gameStart(){
-
+    running = true;
+    cleanWaterScore.textContent = cleanScore;
+    createWater();
+    drawWater();
+    nextTick();
+    drawTrain();
 }
 
 function nextTick(){
-
+    if(running){
+        setTimeout(() => {
+            clearBoard();
+            moveTrain();
+            drawTrain();
+            checkGameOver();
+            nextTick(); // recursion
+        }, 50)
+    } else{
+        displayGameOver();
+    }
 }
 
 // Repainting the board
