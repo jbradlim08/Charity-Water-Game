@@ -8,9 +8,12 @@ const dirtyWaterScoreText = document.getElementById("dirty_water_score");
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
 
-const trainColor = 'lightgreen';
-const trainBorderColor = 'black';
-const waterColor = 'red';
+const trainColor = 'dodgerblue';
+const trainBorderColor = 'rgb(255, 200, 0)';
+const waterColors = {
+    clean: 'darkblue',
+    dirty: 'brown'
+}
 const backgroundColor = '#378BAF';
 
 const unitSize = 25;
@@ -28,21 +31,34 @@ let waterPos = {
 }
 
 let train = [ // Default value
-    {x:unitSize * 3, y:0},
-    {x:unitSize * 2, y:0},
     {x:unitSize, y:0},
     {x:0, y:0}
 ]
 
 let cleanWaterScore, dirtyWaterScore;
+let waterColor = waterColors.clean;
 
 window.addEventListener('keydown', changeDirection);
 resetButton.addEventListener('click', resetGame);
 
 gameStart();
 
+function initialValue(){
+    cleanWaterScore = 0;
+    dirtyWaterScore = 0;
+
+    velocity.x = unitSize;
+    velocity.y = 0;
+
+    train = [ // Default value
+        {x:unitSize, y:0},
+        {x:0, y:0}
+    ]
+}
 
 function gameStart(){
+    initialValue();
+
     running = true;
     cleanWaterScoreText.textContent = cleanWaterScore;
     createWater();
@@ -58,7 +74,7 @@ function nextTick(){
             moveTrain();
 
             // redraw canvas
-            drawWater();
+            drawWater(waterColor);
             drawTrain();
 
             // check game over
@@ -84,11 +100,17 @@ function createWater(){
         return Math.round((Math.random() * (max - min) + min) / unitSize) * unitSize;
     }
 
+    waterColor = waterColors.clean;
     waterPos.x = randomWater(0, gameWidth - unitSize);
     waterPos.y = randomWater(0, gameWidth - unitSize);
+
+    setTimeout(() => {
+        waterColor = waterColors.dirty;
+        createWater
+    }, 8000)
 }
 
-function drawWater(){
+function drawWater(waterColor){
     ctx.fillStyle = waterColor;
     ctx.fillRect(waterPos.x, waterPos.y, unitSize, unitSize);
 }
@@ -109,7 +131,7 @@ function moveTrain(){
 function checkTrainCollision(){
     if(train[0].x == waterPos.x && train[0].y == waterPos.y){
         cleanWaterScore++;
-        cleanWaterScoreText.text = cleanWaterScore;
+        cleanWaterScoreText.textContent = cleanWaterScore;
         createWater();
     } else{
         train.pop();
@@ -201,5 +223,5 @@ function displayGameOver(){
 }
 
 function resetGame(){
-
+    gameStart();
 }

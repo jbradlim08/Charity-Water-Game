@@ -5,6 +5,7 @@
 
 :root{
     --background-color: #378BAF;
+    --reset-button: rgb(255, 200, 0);
 }
 
 body{
@@ -62,5 +63,5 @@ main{
     border-radius: 20px;
 
     margin-top: 20px;
-    background-color: rgb(255, 200, 0);
+    background-color: var(--reset-button);
 }
