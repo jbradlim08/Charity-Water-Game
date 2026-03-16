@@ -15,8 +15,11 @@ const backgroundColor = '#378BAF';
 
 const unitSize = 25;
 
-let xVelocity = unitSize; // (-) to left and (+) to right
-let yVelocity = 0;
+// (-) to left and (+) to right
+let velocity = {
+    x: unitSize,
+    y:0
+}
 let running = false;
 
 let waterPos = {
@@ -63,7 +66,7 @@ function nextTick(){
 
              // recurse back
             nextTick();
-        }, 50)
+        }, 100s)
     } else{
         displayGameOver();
     }
@@ -92,8 +95,8 @@ function drawWater(){
 
 function moveTrain(){
     const head = {
-        x: train[0].x + xVelocity,
-        y: train[0].y + yVelocity
+        x: train[0].x + velocity.x,
+        y: train[0].y + velocity.y
     };
 
     // To add in front
@@ -128,8 +131,41 @@ function drawTrain(){
     })
 }
 
-function changeDirection(){
+function changeDirection(event){
+    const keyPressed = event.keyCode;
+    console.log(keyPressed)
 
+    // Code
+    const LEFT_KEYS = [37, 65];   // Left arrow, A
+    const TOP_KEYS = [38, 87];    // Up arrow, W
+    const RIGHT_KEYS = [39, 68];  // Right arrow, D
+    const BOTTOM_KEYS = [40, 83]; // Down arrow, S
+
+    // Condition boolean
+    const goingLeft = (velocity.x == -unitSize)
+    const goingUp = (velocity.y == -unitSize)
+    const goingRight = (velocity.x == unitSize)
+    const goingDown = (velocity.y == unitSize)
+
+    switch(true){
+        // To avoid turnaround
+        case LEFT_KEYS.includes(keyPressed) && !goingRight:
+            velocity.x = -unitSize;
+            velocity.y = 0;
+            break;
+        case TOP_KEYS.includes(keyPressed) && !goingDown:
+            velocity.x = 0;
+            velocity.y = -unitSize;
+            break;
+        case RIGHT_KEYS.includes(keyPressed) && !goingLeft:
+            velocity.x = unitSize;
+            velocity.y = 0;
+            break;
+        case BOTTOM_KEYS.includes(keyPressed) && !goingUp:
+            velocity.x = 0;
+            velocity.y = unitSize;
+            break;
+    }
 }
 
 function checkGameOver(){
