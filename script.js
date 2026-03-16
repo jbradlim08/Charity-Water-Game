@@ -66,7 +66,7 @@ function nextTick(){
 
              // recurse back
             nextTick();
-        }, 100s)
+        }, 100)
     } else{
         displayGameOver();
     }
@@ -169,11 +169,35 @@ function changeDirection(event){
 }
 
 function checkGameOver(){
+    switch(true){
+        case train[0].x < 0:
+            running = false;
+            break;
+        case train[0].x >= gameWidth:
+            running = false;
+            break;
+        case train[0].y < 0:
+            running = false;
+            break;
+        case train[0].y >= gameHeight:
+            running = false;
+            break;
+    }
 
+    for(let i = 1; i < train.length; i++){
+        if(train[i].x == train[0].x &&
+           train[i].y == train[0].y
+        ){d
+            running = false;
+        }
+    }
 }
 
 function displayGameOver(){
-
+    ctx.font = "50px MV Boli";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2);
 }
 
 function resetGame(){
