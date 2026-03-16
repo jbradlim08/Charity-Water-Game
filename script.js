@@ -2,8 +2,8 @@ const gameBoard = document.getElementById("game_board");
 const ctx = gameBoard.getContext("2d");
 
 const resetButton = document.getElementById("reset_button");
-const cleanWaterScore = document.getElementById("clean_water_score");
-const dirtyWaterScore = document.getElementById("dirty_water_score");
+const cleanWaterScoreText = document.getElementById("clean_water_score");
+const dirtyWaterScoreText = document.getElementById("dirty_water_score");
 
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
@@ -11,6 +11,7 @@ const gameHeight = gameBoard.height;
 const trainColor = 'lightgreen';
 const trainBorder = 'black';
 const waterColor = 'red';
+const backgroundColor = '#378BAF';
 
 const unitSize = 25;
 
@@ -27,7 +28,7 @@ let train = [ // Default value
     {x:0, y:0}
 ]
 
-let cleanScore, dirtyScore;
+let cleanWaterScore, dirtyWaterScore;
 
 window.addEventListener('keydown', changeDirection);
 resetButton.addEventListener('click', resetGame);
@@ -37,17 +38,16 @@ gameStart();
 
 function gameStart(){
     running = true;
-    cleanWaterScore.textContent = cleanScore;
+    cleanWaterScoreText.textContent = cleanWaterScore;
     createWater();
     drawWater();
-    nextTick();
     drawTrain();
+    nextTick();
 }
 
 function nextTick(){
     if(running){
         setTimeout(() => {
-            clearBoard();
             moveTrain();
             drawTrain();
             checkGameOver();
@@ -60,7 +60,8 @@ function nextTick(){
 
 // Repainting the board
 function clearBoard(){ 
-    
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, gameWidth, gameHeight)
 }
 
 // Will find a random place to place a food
