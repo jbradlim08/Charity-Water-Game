@@ -1,34 +1,49 @@
 const gameBoard = document.getElementById("game_board");
 const ctx = gameBoard.getContext("2d");
 
-const resetButton = document.getElementById("reset_button");
+const restartButton = document.getElementById("restart_button");
 const cleanWaterScoreText = document.getElementById("clean_water_score");
 const dirtyWaterScoreText = document.getElementById("dirty_water_score");
+const gameTimer = document.getElementById("game_timer");
+const emojiDisplay = document.getElementById('emoji');
 
+// Canvas size
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
 
-const trainColor = 'dodgerblue';
+const backgroundColor = '#378BAF';
+const trainColor = '#3CD8E6';
 const trainBorderColor = 'rgb(255, 200, 0)';
 const waterColors = {
-    clean: 'darkblue',
+    clean: '#3CD8E6',
     dirty: 'brown'
 }
-const backgroundColor = '#378BAF';
+
+const emojis = {
+    happy: '😁',
+    sad: '😔'
+};
 
 const unitSize = 25;
+const perTick = 100;
+const waterChange = 4500;
+const gameTime = 60; // 30s
+
 
 // (-) to left and (+) to right
 let velocity = {
     x: unitSize,
     y:0
 }
+
 let running = false;
 
-let waterPos = {
+let cleanWaterPos = { // always one
     x: 0,
     y: 0
 }
+
+let dirtyWaterPos = [];
 
 let train = [ // Default value
     {x:unitSize, y:0},
@@ -36,53 +51,74 @@ let train = [ // Default value
 ]
 
 let cleanWaterScore, dirtyWaterScore;
-let waterColor = waterColors.clean;
+let dirtyWaterTimer;
+let gameTickTimer;
+let countDownTimer;
+let growthProgress = 0;
+let time;
 
 window.addEventListener('keydown', changeDirection);
-resetButton.addEventListener('click', resetGame);
+restartButton.addEventListener('click', gameStart);
 
 gameStart();
 
 function initialValue(){
+    clearTimeout(gameTickTimer);
+    clearTimeout(dirtyWaterTimer);
+    clearInterval(countDownTimer);
+
     cleanWaterScore = 0;
     dirtyWaterScore = 0;
+    cleanWaterScoreText.textContent = cleanWaterScore;
+    dirtyWaterScoreText.textContent = dirtyWaterScore;
+    gameTimer.textContent = gameTime;
 
     velocity.x = unitSize;
     velocity.y = 0;
+    dirtyWaterPos = [];
+    growthProgress = 0;
 
     train = [ // Default value
         {x:unitSize, y:0},
         {x:0, y:0}
     ]
+
+    running = true;
 }
 
 function gameStart(){
     initialValue();
-
-    running = true;
-    cleanWaterScoreText.textContent = cleanWaterScore;
     createWater();
-    drawWater();
+    drawCleanWater();
     nextTick();
+    countDown();
+    setEmoji();
 }
 
 function nextTick(){
     if(running){
-        setTimeout(() => {
-            // clear canvas
+        gameTickTimer = setTimeout(() => {
+            // Clear canvas
             clearCanvas();
+
+            // Move train
             moveTrain();
 
-            // redraw canvas
-            drawWater(waterColor);
+            // Redraw canvas
+            drawCleanWater();
+            drawDirtyWater();
             drawTrain();
+            
+            // Set emoji
+            setEmoji();
 
-            // check game over
+            // Check game over
             checkGameOver();
 
-             // recurse back
+
+             // Recurse back
             nextTick();
-        }, 100)
+        }, perTick)
     } else{
         displayGameOver();
     }
@@ -94,25 +130,47 @@ function clearCanvas(){
     ctx.fillRect(0, 0, gameWidth, gameHeight)
 }
 
-// Will find a random place to place a food
+// Will find a random place to place a water
 function createWater(){
     function randomWater(min, max){
         return Math.round((Math.random() * (max - min) + min) / unitSize) * unitSize;
     }
 
-    waterColor = waterColors.clean;
-    waterPos.x = randomWater(0, gameWidth - unitSize);
-    waterPos.y = randomWater(0, gameWidth - unitSize);
+    cancelDirtyWaterTimer();
+    cleanWaterPos.x = randomWater(0, gameWidth - unitSize);
+    cleanWaterPos.y = randomWater(0, gameHeight - unitSize);
 
-    setTimeout(() => {
-        waterColor = waterColors.dirty;
-        createWater
-    }, 8000)
+    startDirtyWaterTimer(cleanWaterPos.x, cleanWaterPos.y);
 }
 
-function drawWater(waterColor){
-    ctx.fillStyle = waterColor;
-    ctx.fillRect(waterPos.x, waterPos.y, unitSize, unitSize);
+function startDirtyWaterTimer(posX, posY) {
+  dirtyWaterTimer = setTimeout(() => {
+    dirtyWaterScore++;
+    dirtyWaterScoreText.textContent = dirtyWaterScore;
+    dirtyWaterPos.push(
+        {x: posX, y: posY}
+    )
+    createWater(); // call it
+  }, waterChange);
+}
+
+function cancelDirtyWaterTimer() {
+  clearTimeout(dirtyWaterTimer);
+}
+
+function drawCleanWater(){
+    ctx.fillStyle = waterColors.clean;
+    ctx.fillRect(cleanWaterPos.x, cleanWaterPos.y, unitSize, unitSize);
+}
+
+function drawDirtyWater(){
+    ctx.fillStyle = waterColors.dirty;
+    dirtyWaterPos.forEach((water) => {
+        ctx.fillRect(water.x, 
+                    water.y, 
+                    unitSize, 
+                    unitSize)
+    })
 }
 
 function moveTrain(){
@@ -129,27 +187,70 @@ function moveTrain(){
 }
 
 function checkTrainCollision(){
-    if(train[0].x == waterPos.x && train[0].y == waterPos.y){
-        cleanWaterScore++;
-        cleanWaterScoreText.textContent = cleanWaterScore;
+    if(train[0].x == cleanWaterPos.x && train[0].y == cleanWaterPos.y){
         createWater();
+
+        growthProgress += 1;
+        if(growthProgress < 3){
+            train.pop();
+        } else{
+            cleanWaterScore++;
+            cleanWaterScoreText.textContent = cleanWaterScore;
+            growthProgress = 0;
+        }
     } else{
         train.pop();
     }
 }
 
 function drawTrain(){
-    ctx.fillStyle = trainColor;
-    ctx.strokeStyle = trainBorderColor;
-    train.forEach((trainPart) => {
-        ctx.fillRect(trainPart.x, 
-                    trainPart.y, 
-                    unitSize, 
-                    unitSize)
-        ctx.strokeRect(trainPart.x, 
-                    trainPart.y, 
-                    unitSize, 
-                    unitSize)
+    ctx.lineWidth = 3;  
+    train.forEach((trainPart, index) => {
+        
+        if (index === 0) {
+            // head style
+            ctx.fillStyle = trainBorderColor;
+            ctx.strokeStyle = 'black';
+            ctx.fillRect(trainPart.x, 
+                         trainPart.y, 
+                         unitSize, 
+                         unitSize)
+            ctx.strokeRect(trainPart.x,
+                           trainPart.y, 
+                           unitSize, 
+                           unitSize)
+        } else {
+            ctx.fillStyle = trainColor;
+            ctx.strokeStyle = trainBorderColor;
+            const isTail = index === train.length - 1; // check last index
+            if(isTail){
+                const fillHeight = growthProgress === 1
+                    ? unitSize / 3
+                    : growthProgress === 2
+                    ? (2 * unitSize) / 3
+                    : unitSize;
+                if(growthProgress === 1){
+                    ctx.fillRect(trainPart.x, 
+                        trainPart.y + (unitSize - fillHeight), 
+                        unitSize, 
+                        unitSize - 2 * (unitSize / 3))
+                }
+                else if(growthProgress === 2){
+                    ctx.fillRect(trainPart.x, 
+                            trainPart.y + (unitSize - fillHeight), 
+                            unitSize, 
+                            unitSize - (unitSize / 3))
+                }
+            } else{
+                ctx.fillRect(trainPart.x, trainPart.y, 
+                            unitSize, 
+                            unitSize)
+            }
+            ctx.strokeRect(trainPart.x,
+                trainPart.y, 
+                unitSize,
+                unitSize)
+        }
     })
 }
 
@@ -209,19 +310,49 @@ function checkGameOver(){
     for(let i = 1; i < train.length; i++){
         if(train[i].x == train[0].x &&
            train[i].y == train[0].y
-        ){d
+        ){
             running = false;
         }
     }
 }
 
 function displayGameOver(){
+    clearInterval(countDownTimer);
+    clearTimeout(gameTickTimer);
+    clearTimeout(dirtyWaterTimer);
+
     ctx.font = "50px MV Boli";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
-    ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2);
+    if (time === 0){
+        ctx.fillText("TIMES UP!", gameWidth / 2, gameHeight / 2);
+        ctx.font = "22px MV Boli";
+        ctx.fillText(`You collected ${cleanWaterScore} clean water`, 
+            gameWidth / 2, gameHeight / 2 + 30);
+        ctx.fillText(`and wasted ${dirtyWaterScore} clean water`, 
+            gameWidth / 2, gameHeight / 2 + 60);
+    }else{
+        ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2);
+    }
 }
 
-function resetGame(){
-    gameStart();
+function countDown(){
+    time = gameTime;
+    countDownTimer = setInterval(() => {
+        time--;
+        gameTimer.textContent = time;
+
+        if (time <= 0) {
+        clearInterval(countDownTimer);
+        running = false;
+    }
+    }, 1000)
+}
+
+function setEmoji() {
+    if(cleanWaterScore >= dirtyWaterScore){
+        emojiDisplay.textContent = emojis.happy;
+    } else{
+        emojiDisplay.textContent = emojis.sad;
+    }
 }

@@ -35,14 +35,37 @@ nav{
     color: white;
 }
 
-.emoji{
-    font-size: 40px;
+.score{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.score img{
+    width: 50%;
+} 
+
+.score div{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    align-items: center;
+    font-size: 35px;
+}
+
+#emoji{
+    font-size: 60px;
 }
 
 .timer{
     display: flex;
     flex-direction: column;
     text-align: center;
+}
+
+.timer div{
+    font-size: 40px;
 }
 
 main{
@@ -56,7 +79,7 @@ main{
 
 }
 
-#reset_button{
+#restart_button{
     font-size: 40px;
     padding: 15px;
     border: none;

@@ -11,15 +11,21 @@
         <header>
             <nav>
                 <div class="score">
-                    <p id="clean_water_score">0</p>
-                    <p id="dirty_water_score">0</p>
+                    <div>
+                        <img src="media/clean_water.png">
+                        <p id="clean_water_score">0</p>
+                    </div>
+                    <div>
+                        <img src="media/dirty_water.png">
+                        <p id="dirty_water_score">0</p>
+                    </div>
                 </div>
-                <div class="emoji">
+                <div id="emoji">
                     😁
                 </div>
                 <div class="timer">
                     <div>🕒</div>
-                    <p>10.0</p>
+                    <p id="game_timer">30</p>
                 </div>
             </nav>
         </header>
@@ -28,7 +34,7 @@
                 
             </canvas>
             <div></div>
-            <button id="reset_button">Reset</button>
+            <button id="restart_button">restart</button>
         </main>
         
     </div>
