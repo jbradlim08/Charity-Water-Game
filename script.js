@@ -241,6 +241,7 @@ function drawTrain(){
                             unitSize, 
                             unitSize - (unitSize / 3))
                 }
+                // else growhtProgress 0 / 3 will be empty
             } else{
                 ctx.fillRect(trainPart.x, trainPart.y, 
                             unitSize, 

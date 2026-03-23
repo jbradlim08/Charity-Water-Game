@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+
 *{
     padding: 0px;
     margin: 0px;
@@ -10,26 +12,34 @@
 
 body{
     background: rgb(76, 76, 76);
-    margin: auto;
+    margin: 0;
+    font-family: "Proxima Nova", "Avenir Next", Avenir, Montserrat, "Segoe UI", sans-serif;
+    overflow: hidden;
 }
 
 #game_container{
-    width: 600px;
+    width: min(600px, 100vw);
     height: 100vh;
     background: var(--background-color);
     margin: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 12px;
 }
 
 header{
-    padding: 25px;
+    width: 100%;
+    padding: 10px 16px 8px;
+    box-sizing: border-box;
 }
 
 nav{
-    width: 500px;
+    width: min(500px, calc(100vw - 32px));
     margin: auto;
     display: flex;
     justify-content: space-between;
-    font-family: 'Courier New', Courier, monospace;
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -70,21 +80,46 @@ nav{
 
 main{
     text-align: center;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 #game_board{
-    width: 500px;
-    height: 500px;
+    width: min(500px, calc(100vw - 32px), calc(100vh - 260px));
+    height: min(500px, calc(100vw - 32px), calc(100vh - 260px));
     border: 2px solid white;
-
+    box-sizing: border-box;
 }
 
 #restart_button{
-    font-size: 40px;
-    padding: 15px;
+    font-size: 30px;
+    padding: 10px 18px;
     border: none;
     border-radius: 20px;
-
-    margin-top: 20px;
     background-color: var(--reset-button);
+}
+
+.charity-links{
+    width: min(500px, calc(100vw - 32px));
+    margin: 8px auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 15px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.charity-links a{
+    color: white;
+    text-decoration: underline;
+}
+
+.charity-links a:hover{
+    color: var(--reset-button);
 }
