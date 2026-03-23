@@ -8,6 +8,7 @@
 :root{
     --background-color: #378BAF;
     --reset-button: rgb(255, 200, 0);
+    --panel-bg: rgba(255, 255, 255, 0.15);
 }
 
 body{
@@ -89,6 +90,47 @@ main{
     gap: 10px;
 }
 
+.difficulty{
+    width: min(500px, calc(100vw - 32px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    background: var(--panel-bg);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+}
+
+.difficulty select{
+    appearance: none;
+    border: 2px solid var(--reset-button);
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2d3a;
+    padding: 6px 34px 6px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #1f2d3a 50%),
+        linear-gradient(135deg, #1f2d3a 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.difficulty select:focus{
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
 #game_board{
     width: min(500px, calc(100vw - 32px), calc(100vh - 260px));
     height: min(500px, calc(100vw - 32px), calc(100vh - 260px));
@@ -97,8 +139,9 @@ main{
 }
 
 #restart_button{
-    font-size: 30px;
-    padding: 10px 18px;
+    color: rgb(56, 58, 65);
+    font-size: 28px;
+    padding: 10px 20px;
     border: none;
     border-radius: 20px;
     background-color: var(--reset-button);
@@ -109,10 +152,12 @@ main{
     margin: 8px auto 0 auto;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
     font-size: 15px;
-    padding: 0 8px;
+    padding: 0px;
     box-sizing: border-box;
+    position: relative;
 }
 
 .charity-links a{
@@ -122,4 +167,48 @@ main{
 
 .charity-links a:hover{
     color: var(--reset-button);
+}
+
+.rules-help{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rules-icon{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid white;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: default;
+}
+
+.rules-tooltip{
+    position: absolute;
+    bottom: 130%;
+    right: 0;
+    width: 220px;
+    min-height: 70px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background: rgba(31, 45, 58, 0.95);
+    padding: 10px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.rules-help:hover .rules-tooltip{
+    opacity: 1;
+    visibility: visible;
 }

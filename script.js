@@ -6,6 +6,7 @@ const cleanWaterScoreText = document.getElementById("clean_water_score");
 const dirtyWaterScoreText = document.getElementById("dirty_water_score");
 const gameTimer = document.getElementById("game_timer");
 const emojiDisplay = document.getElementById('emoji');
+const difficultySelect = document.getElementById("difficulty_select");
 
 // Canvas size
 const gameWidth = gameBoard.width;
@@ -24,10 +25,16 @@ const emojis = {
     sad: '😔'
 };
 
-const unitSize = 25;
-const perTick = 100;
-const waterChange = 4500;
-const gameTime = 60; // 30s
+const difficultySettings = {
+    easy: { unitSize: 25, perTick: 100, waterChange: 5000, gameTime: 60 },
+    medium: { unitSize: 25, perTick: 85, waterChange: 4500, gameTime: 90 },
+    hard: { unitSize: 20, perTick: 70, waterChange: 4000, gameTime: 120 }
+};
+
+let unitSize = 25;
+let perTick = 100;
+let waterChange = 5000;
+let gameTime = 60;
 
 
 // (-) to left and (+) to right
@@ -59,8 +66,24 @@ let time;
 
 window.addEventListener('keydown', changeDirection);
 restartButton.addEventListener('click', gameStart);
+difficultySelect.addEventListener('change', onDifficultyChange);
+
+applyDifficulty(difficultySelect.value);
 
 gameStart();
+
+function applyDifficulty(mode){
+    const settings = difficultySettings[mode] || difficultySettings.easy;
+    unitSize = settings.unitSize;
+    perTick = settings.perTick;
+    waterChange = settings.waterChange;
+    gameTime = settings.gameTime;
+}
+
+function onDifficultyChange(event){
+    applyDifficulty(event.target.value);
+    gameStart();
+}
 
 function initialValue(){
     clearTimeout(gameTickTimer);
