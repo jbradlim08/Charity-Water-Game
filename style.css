@@ -6,9 +6,16 @@
 }
 
 :root{
+    --app-vh: 100vh;
     --background-color: #378BAF;
     --reset-button: rgb(255, 200, 0);
     --panel-bg: rgba(255, 255, 255, 0.15);
+}
+
+@supports (height: 100dvh){
+    :root{
+        --app-vh: 100dvh;
+    }
 }
 
 body{
@@ -16,18 +23,19 @@ body{
     margin: 0;
     font-family: "Proxima Nova", "Avenir Next", Avenir, Montserrat, "Segoe UI", sans-serif;
     overflow: hidden;
+    min-height: var(--app-vh);
 }
 
 #game_container{
     width: min(600px, 100vw);
-    height: 100vh;
+    height: var(--app-vh);
     background: var(--background-color);
     margin: auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 0 12px;
+    padding: calc(10px + env(safe-area-inset-top)) 0 calc(12px + env(safe-area-inset-bottom));
 }
 
 header{
@@ -132,10 +140,11 @@ main{
 }
 
 #game_board{
-    width: min(500px, calc(100vw - 32px), calc(100vh - 260px));
-    height: min(500px, calc(100vw - 32px), calc(100vh - 260px));
+    width: min(500px, calc(100vw - 32px), calc(var(--app-vh) - 260px));
+    height: min(500px, calc(100vw - 32px), calc(var(--app-vh) - 260px));
     border: 2px solid white;
     box-sizing: border-box;
+    touch-action: none;
 }
 
 #restart_button{
@@ -196,6 +205,7 @@ main{
     bottom: 130%;
     right: 0;
     width: 220px;
+    color: white;
     min-height: 70px;
     border: 2px solid white;
     border-radius: 10px;

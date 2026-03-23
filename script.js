@@ -12,7 +12,7 @@ const difficultySelect = document.getElementById("difficulty_select");
 const gameWidth = gameBoard.width;
 const gameHeight = gameBoard.height;
 
-const backgroundColor = '#378BAF';
+const backgroundColor = '#347e9e';
 const trainColor = '#3CD8E6';
 const trainBorderColor = 'rgb(255, 200, 0)';
 const waterColors = {
@@ -27,8 +27,8 @@ const emojis = {
 
 const difficultySettings = {
     easy: { unitSize: 25, perTick: 100, waterChange: 5000, gameTime: 60 },
-    medium: { unitSize: 25, perTick: 85, waterChange: 4500, gameTime: 90 },
-    hard: { unitSize: 20, perTick: 70, waterChange: 4000, gameTime: 120 }
+    medium: { unitSize: 25, perTick: 75, waterChange: 4500, gameTime: 90 },
+    hard: { unitSize: 20, perTick: 60, waterChange: 4000, gameTime: 120 }
 };
 
 let unitSize = 25;
@@ -63,10 +63,15 @@ let gameTickTimer;
 let countDownTimer;
 let growthProgress = 0;
 let time;
+// Phone touch
+let touchStartX = 0;
+let touchStartY = 0;
+const minSwipeDistance = 24;
 
 window.addEventListener('keydown', changeDirection);
 restartButton.addEventListener('click', gameStart);
 difficultySelect.addEventListener('change', onDifficultyChange);
+setupPhoneControls();
 
 applyDifficulty(difficultySelect.value);
 
@@ -83,6 +88,20 @@ function applyDifficulty(mode){
 function onDifficultyChange(event){
     applyDifficulty(event.target.value);
     gameStart();
+}
+
+function setupPhoneControls(){
+    // Phone controls: prefer Pointer Events (more reliable on modern phones).
+    if(window.PointerEvent){
+        gameBoard.addEventListener('pointerdown', handlePointerDown);
+        gameBoard.addEventListener('pointerup', handlePointerUp);
+    } else{
+        gameBoard.addEventListener('touchstart', handleTouchStart, { passive: true });
+        gameBoard.addEventListener('touchend', handleTouchEnd, { passive: true });
+    }
+
+    // Keep touchmove blocker to prevent page scroll while swiping on the board.
+    gameBoard.addEventListener('touchmove', preventTouchScroll, { passive: false });
 }
 
 function initialValue(){
@@ -280,38 +299,98 @@ function drawTrain(){
 
 function changeDirection(event){
     const keyPressed = event.keyCode;
-    console.log(keyPressed)
-
-    // Code
-    const LEFT_KEYS = [37, 65];   // Left arrow, A
-    const TOP_KEYS = [38, 87];    // Up arrow, W
-    const RIGHT_KEYS = [39, 68];  // Right arrow, D
-    const BOTTOM_KEYS = [40, 83]; // Down arrow, S
-
-    // Condition boolean
-    const goingLeft = (velocity.x == -unitSize)
-    const goingUp = (velocity.y == -unitSize)
-    const goingRight = (velocity.x == unitSize)
-    const goingDown = (velocity.y == unitSize)
+    const LEFT_KEYS = [37, 65];
+    const TOP_KEYS = [38, 87];
+    const RIGHT_KEYS = [39, 68];
+    const BOTTOM_KEYS = [40, 83];
 
     switch(true){
-        // To avoid turnaround
-        case LEFT_KEYS.includes(keyPressed) && !goingRight:
-            velocity.x = -unitSize;
-            velocity.y = 0;
+        case LEFT_KEYS.includes(keyPressed):
+            setDirection("left");
             break;
-        case TOP_KEYS.includes(keyPressed) && !goingDown:
-            velocity.x = 0;
-            velocity.y = -unitSize;
+        case TOP_KEYS.includes(keyPressed):
+            setDirection("up");
             break;
-        case RIGHT_KEYS.includes(keyPressed) && !goingLeft:
-            velocity.x = unitSize;
-            velocity.y = 0;
+        case RIGHT_KEYS.includes(keyPressed):
+            setDirection("right");
             break;
-        case BOTTOM_KEYS.includes(keyPressed) && !goingUp:
-            velocity.x = 0;
-            velocity.y = unitSize;
+        case BOTTOM_KEYS.includes(keyPressed):
+            setDirection("down");
             break;
+    }
+}
+
+function setDirection(direction){
+    const goingLeft = velocity.x === -unitSize;
+    const goingUp = velocity.y === -unitSize;
+    const goingRight = velocity.x === unitSize;
+    const goingDown = velocity.y === unitSize;
+
+    if(direction === "left" && !goingRight){
+        velocity.x = -unitSize;
+        velocity.y = 0;
+    } else if(direction === "up" && !goingDown){
+        velocity.x = 0;
+        velocity.y = -unitSize;
+    } else if(direction === "right" && !goingLeft){
+        velocity.x = unitSize;
+        velocity.y = 0;
+    } else if(direction === "down" && !goingUp){
+        velocity.x = 0;
+        velocity.y = unitSize;
+    }
+}
+
+function handleTouchStart(event){
+    // Phone: remember where the swipe starts.
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+}
+
+function handleTouchEnd(event){
+    // Phone: convert swipe direction into game direction.
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if(absX < minSwipeDistance && absY < minSwipeDistance){
+        return;
+    }
+
+    if(absX > absY){
+        setDirection(deltaX > 0 ? "right" : "left");
+    } else{
+        setDirection(deltaY > 0 ? "down" : "up");
+    }
+}
+
+function preventTouchScroll(event){
+    // Phone: prevent the page from scrolling while swiping on canvas.
+    event.preventDefault();
+}
+
+function handlePointerDown(event){
+    touchStartX = event.clientX;
+    touchStartY = event.clientY;
+}
+
+function handlePointerUp(event){
+    const deltaX = event.clientX - touchStartX;
+    const deltaY = event.clientY - touchStartY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if(absX < minSwipeDistance && absY < minSwipeDistance){
+        return;
+    }
+
+    if(absX > absY){
+        setDirection(deltaX > 0 ? "right" : "left");
+    } else{
+        setDirection(deltaY > 0 ? "down" : "up");
     }
 }
 
