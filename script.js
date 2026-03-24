@@ -67,6 +67,8 @@ let time;
 let touchStartX = 0;
 let touchStartY = 0;
 const minSwipeDistance = 24;
+let audioContext;
+let endSoundPlayed = false;
 
 window.addEventListener('keydown', changeDirection);
 restartButton.addEventListener('click', gameStart);
@@ -119,6 +121,7 @@ function initialValue(){
     velocity.y = 0;
     dirtyWaterPos = [];
     growthProgress = 0;
+    endSoundPlayed = false;
 
     train = [ // Default value
         {x:unitSize, y:0},
@@ -187,6 +190,7 @@ function createWater(){
 
 function startDirtyWaterTimer(posX, posY) {
   dirtyWaterTimer = setTimeout(() => {
+    playDirtyWaterSound();
     dirtyWaterScore++;
     dirtyWaterScoreText.textContent = dirtyWaterScore;
     dirtyWaterPos.push(
@@ -230,6 +234,7 @@ function moveTrain(){
 
 function checkTrainCollision(){
     if(train[0].x == cleanWaterPos.x && train[0].y == cleanWaterPos.y){
+        playCollectSound();
         createWater();
 
         growthProgress += 1;
@@ -243,6 +248,71 @@ function checkTrainCollision(){
     } else{
         train.pop();
     }
+}
+
+function playCollectSound(){
+    const now = getAudioTime();
+    if(now === null){
+        return;
+    }
+    playTone(660, now, 0.10, "triangle", 0.10);
+    playTone(880, now + 0.08, 0.10, "triangle", 0.08);
+}
+
+function playDirtyWaterSound(){
+    const now = getAudioTime();
+    if(now === null){
+        return;
+    }
+    playTone(240, now, 0.12, "sawtooth", 0.08);
+}
+
+function playGameOverSound(){
+    const now = getAudioTime();
+    if(now === null){
+        return;
+    }
+    playTone(360, now, 0.12, "square", 0.09);
+    playTone(260, now + 0.10, 0.14, "square", 0.09);
+}
+
+function playTimesUpSound(){
+    const now = getAudioTime();
+    if(now === null){
+        return;
+    }
+    playTone(520, now, 0.10, "triangle", 0.08);
+    playTone(420, now + 0.10, 0.12, "triangle", 0.08);
+    playTone(320, now + 0.22, 0.14, "triangle", 0.08);
+}
+
+function getAudioTime(){
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx){
+        return null;
+    }
+    if(!audioContext){
+        audioContext = new AudioCtx();
+    }
+    return audioContext.currentTime;
+}
+
+function playTone(frequency, startTime, duration, type, maxGain){
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+
+    gainNode.gain.setValueAtTime(0.0001, startTime);
+    gainNode.gain.exponentialRampToValueAtTime(maxGain, startTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
 }
 
 function drawTrain(){
@@ -423,6 +493,14 @@ function displayGameOver(){
     clearInterval(countDownTimer);
     clearTimeout(gameTickTimer);
     clearTimeout(dirtyWaterTimer);
+    if(!endSoundPlayed){
+        if (time === 0){
+            playTimesUpSound();
+        } else{
+            playGameOverSound();
+        }
+        endSoundPlayed = true;
+    }
 
     ctx.font = "50px MV Boli";
     ctx.fillStyle = "black";
