@@ -32,7 +32,7 @@ Players control a water train, collect clean water, avoid wasted water, and race
 
 ### Mobile / Touch
 
-- Swipe in the game area (`#game_container`) to change direction
+- Swipe anywhere from your screen
 
 ## Difficulty Modes
 
