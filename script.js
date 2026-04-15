@@ -1,4 +1,5 @@
 const gameBoard = document.getElementById("game_board");
+const gameContainer = document.getElementById("game_container");
 const ctx = gameBoard.getContext("2d");
 
 const restartButton = document.getElementById("restart_button");
@@ -6,6 +7,7 @@ const cleanWaterScoreText = document.getElementById("clean_water_score");
 const dirtyWaterScoreText = document.getElementById("dirty_water_score");
 const gameTimer = document.getElementById("game_timer");
 const emojiDisplay = document.getElementById('emoji');
+const emojiStatus = document.getElementById("emoji_status");
 const difficultySelect = document.getElementById("difficulty_select");
 
 // Canvas size
@@ -21,8 +23,8 @@ const waterColors = {
 }
 
 const emojis = {
-    happy: '😁',
-    sad: '😔'
+    happy: "\u{1F601}",
+    sad: "\u{1F614}"
 };
 
 const difficultySettings = {
@@ -93,17 +95,17 @@ function onDifficultyChange(event){
 }
 
 function setupPhoneControls(){
-    // Phone controls: prefer Pointer Events (more reliable on modern phones).
+    // Phone controls: allow swipes across the full game area, not just canvas.
     if(window.PointerEvent){
-        gameBoard.addEventListener('pointerdown', handlePointerDown);
-        gameBoard.addEventListener('pointerup', handlePointerUp);
+        gameContainer.addEventListener('pointerdown', handlePointerDown);
+        gameContainer.addEventListener('pointerup', handlePointerUp);
     } else{
-        gameBoard.addEventListener('touchstart', handleTouchStart, { passive: true });
-        gameBoard.addEventListener('touchend', handleTouchEnd, { passive: true });
+        gameContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+        gameContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
 
-    // Keep touchmove blocker to prevent page scroll while swiping on the board.
-    gameBoard.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    // Prevent accidental page gestures while swiping anywhere in the game area.
+    gameContainer.addEventListener('touchmove', preventTouchScroll, { passive: false });
 }
 
 function initialValue(){
@@ -514,6 +516,8 @@ function displayGameOver(){
             gameWidth / 2, gameHeight / 2 + 60);
     }else{
         ctx.fillText("GAME OVER!", gameWidth / 2, gameHeight / 2);
+        ctx.font = "22px MV Boli";
+        ctx.fillText("Collect clean water before it turns dirty", gameWidth / 2, gameHeight / 2 + 40);
     }
 }
 
@@ -533,7 +537,10 @@ function countDown(){
 function setEmoji() {
     if(cleanWaterScore >= dirtyWaterScore){
         emojiDisplay.textContent = emojis.happy;
+        emojiStatus.textContent = "Good";
     } else{
         emojiDisplay.textContent = emojis.sad;
+        emojiStatus.textContent = "Risk";
     }
 }
+

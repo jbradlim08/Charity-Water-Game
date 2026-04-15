@@ -61,20 +61,44 @@ nav{
 }
 
 .score img{
-    width: 50%;
+    width: 28px;
+    height: 28px;
 } 
 
-.score div{
+.score-item{
     display: flex;
     flex-direction: row;
     gap: 10px;
-
     align-items: center;
-    font-size: 35px;
+    font-size: 50px;
+    color: white;
+}
+
+.score-item p{
+    min-width: 22px;
+    line-height: 1;
+    font-size: 30px;
+    font-weight: 800;
 }
 
 #emoji{
     font-size: 60px;
+    line-height: 1;
+}
+
+.emoji-panel{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.emoji-label{
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.2px;
 }
 
 .timer{
