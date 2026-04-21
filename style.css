@@ -81,24 +81,13 @@ nav{
     font-weight: 800;
 }
 
-#emoji{
-    font-size: 60px;
-    line-height: 1;
-}
-
-.emoji-panel{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.emoji-label{
+.game-title{
     color: white;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 800;
     text-align: center;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.4px;
+    align-self: center;
 }
 
 .timer{

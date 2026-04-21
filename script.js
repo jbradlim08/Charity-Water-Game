@@ -6,8 +6,6 @@ const restartButton = document.getElementById("restart_button");
 const cleanWaterScoreText = document.getElementById("clean_water_score");
 const dirtyWaterScoreText = document.getElementById("dirty_water_score");
 const gameTimer = document.getElementById("game_timer");
-const emojiDisplay = document.getElementById('emoji');
-const emojiStatus = document.getElementById("emoji_status");
 const difficultySelect = document.getElementById("difficulty_select");
 
 // Canvas size
@@ -21,11 +19,6 @@ const waterColors = {
     clean: '#3CD8E6',
     dirty: 'brown'
 }
-
-const emojis = {
-    happy: "\u{1F601}",
-    sad: "\u{1F614}"
-};
 
 const difficultySettings = {
     easy: { unitSize: 25, perTick: 100, waterChange: 5000, gameTime: 60 },
@@ -139,7 +132,6 @@ function gameStart(){
     drawCleanWater();
     nextTick();
     countDown();
-    setEmoji();
 }
 
 function nextTick(){
@@ -156,9 +148,6 @@ function nextTick(){
             drawDirtyWater();
             drawTrain();
             
-            // Set emoji
-            setEmoji();
-
             // Check game over
             checkGameOver();
 
@@ -534,13 +523,4 @@ function countDown(){
     }, 1000)
 }
 
-function setEmoji() {
-    if(cleanWaterScore >= dirtyWaterScore){
-        emojiDisplay.textContent = emojis.happy;
-        emojiStatus.textContent = "Good";
-    } else{
-        emojiDisplay.textContent = emojis.sad;
-        emojiStatus.textContent = "Risk";
-    }
-}
 
