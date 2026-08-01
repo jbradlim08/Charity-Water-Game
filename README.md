@@ -4,6 +4,8 @@ A snake-style browser game built for **charity: water** awareness.
 
 Players control a water train, collect clean water, avoid wasted water, and race against the timer.
 
+Live Demo: https://jbradlim08.github.io/Charity-Water-Game/
+
 ## Gameplay Summary
 
 - Collect the **clean water** block before it expires.
